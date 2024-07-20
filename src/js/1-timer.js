@@ -9,15 +9,11 @@ function convertMs(ms) {
   const hour = minute * 60;
   const day = hour * 24;
 
-  const days = String(Math.floor(ms / day)).padStart(2, '0');
-  const hours = String(Math.floor((ms % day) / hour)).padStart(2, '0');
-  const minutes = String(Math.floor(((ms % day) % hour) / minute)).padStart(
-    2,
-    '0'
-  );
-  const seconds = String(
-    Math.floor((((ms % day) % hour) % minute) / second)
-  ).padStart(2, '0');
+  const days = Math.floor(ms / day);
+  const hours = Math.floor((ms % day) / hour);
+  const minutes = Math.floor(((ms % day) % hour) / minute);
+  const seconds = Math.floor((((ms % day) % hour) % minute) / second);
+
   return { days, hours, minutes, seconds };
 }
 
@@ -30,6 +26,8 @@ const secondsEl = document.querySelector('span[data-seconds]');
 
 let userSelectedDate;
 
+buttonEl.disabled = true;
+
 const options = {
   enableTime: true,
   time_24hr: true,
@@ -37,16 +35,16 @@ const options = {
   minuteIncrement: 1,
   onClose(selectedDates) {
     userSelectedDate = selectedDates[0];
-    if (userSelectedDate.getTime() < Date.now) {
-      buttonEl.disabled = false;
-      iziToast.warning({
-        position: 'center',
+    if (userSelectedDate.getTime() < Date.now()) {
+      buttonEl.disabled = true;
+      iziToast.error({
+        position: 'topRight',
         backgroundColor: 'red',
         messageColor: 'black',
         message: 'Please choose a date in the future',
       });
     } else {
-      buttonEl.disabled = true;
+      buttonEl.disabled = false;
     }
   },
 };
@@ -54,10 +52,10 @@ const options = {
 flatpickr(inputEl, options);
 
 function recordingTimerDisplay({ days, hours, minutes, seconds }) {
-  daysEl.textContent = days;
-  hoursEl.textContent = hours;
-  minutesEl.textContent = minutes;
-  secondsEl.textContent = seconds;
+  daysEl.textContent = String(days).padStart(2, '0');
+  hoursEl.textContent = String(hours).padStart(2, '0');
+  minutesEl.textContent = String(minutes).padStart(2, '0');
+  secondsEl.textContent = String(seconds).padStart(2, '0');
 }
 
 buttonEl.addEventListener('click', madeBtnClick);
